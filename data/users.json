@@ -1,0 +1,78 @@
+[
+    {
+        "name": "Stephanie",
+        "email": "steph@travelux.co.uk",
+        "password": "travelux123",
+        "role": "Marketing Assistant",
+        "campaign_history": [
+            {
+                "campaign_name": "Africa Explorer June '26",
+                "niche": "Travel",
+                "aesthetic": "Luxury",
+                "influencer": "7",
+                "score": 93,
+                "date": "2026-04-03",
+                "status": "Confirmed"
+            },
+            {
+                "campaign_name": "Easter",
+                "niche": "Travel",
+                "aesthetic": "Luxury",
+                "influencer": "1",
+                "score": 73,
+                "date": "2026-04-03",
+                "status": "Confirmed"
+            },
+            {
+                "campaign_name": "Backpacking Europe '26",
+                "niche": "Travel",
+                "aesthetic": "Luxury",
+                "influencer": "3",
+                "score": 60,
+                "date": "2026-04-03",
+                "status": "Confirmed"
+            },
+            {
+                "campaign_name": "Kenya '26",
+                "niche": "Travel",
+                "aesthetic": "Boho",
+                "influencer": "3",
+                "score": 66,
+                "date": "2026-04-03",
+                "status": "Confirmed",
+                "leaderboard": [
+                    {
+                        "Name": "3",
+                        "Match Score": 66,
+                        "Followers": 10018,
+                        "Engagement": 0.2371
+                    },
+                    {
+                        "Name": "1",
+                        "Match Score": 64,
+                        "Followers": 9461,
+                        "Engagement": 0.2271
+                    },
+                    {
+                        "Name": "19",
+                        "Match Score": 64,
+                        "Followers": 3447,
+                        "Engagement": 0.2223
+                    },
+                    {
+                        "Name": "11",
+                        "Match Score": 61,
+                        "Followers": 9044,
+                        "Engagement": 0.1955
+                    },
+                    {
+                        "Name": "12",
+                        "Match Score": 61,
+                        "Followers": 13798,
+                        "Engagement": 0.1989
+                    }
+                ]
+            }
+        ]
+    }
+]
