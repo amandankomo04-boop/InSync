@@ -1,0 +1,9 @@
+streamlit
+extra-streamlit-components
+pandas
+plotly
+numpy
+torch
+torchvision
+pillow
+joblib
