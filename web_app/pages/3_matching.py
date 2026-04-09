@@ -6,7 +6,6 @@ from pathlib import Path
 import time
 import sys
 import json
-from src.utils import calculate_cosine_similarity
 import torch # or tensorflow
 import torchvision.transforms as transforms
 import torchvision.models as models
@@ -38,6 +37,8 @@ upload_dir.mkdir(parents=True, exist_ok=True)
 
 import pickle
 import torch
+
+from src.utils import calculate_cosine_similarity
 
 # 1. Use the path you defined
 dna_path = root_path / "models" / "system_dna.pkl"
