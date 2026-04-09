@@ -31,7 +31,7 @@ if "user_data" not in st.session_state:
 user = st.session_state.get("user_data", {})
 current_email = st.session_state["user_email"]
 
-# --- WELCOME ANIMATION CHECK ---
+# 4. Balloons Animation 
 if st.session_state.get("show_welcome_balloons", False):
     st.balloons()
     st.toast(f"Welcome to InSync, {st.session_state.get('user_name', 'User')}!")
@@ -39,7 +39,7 @@ if st.session_state.get("show_welcome_balloons", False):
     st.session_state["show_welcome_balloons"] = False
 
 
-# Updated Helper Function with dynamic height
+# 5. Donut Chart Function
 def render_donut(score, custom_height=180, custom_font=35):
     display_score = int(float(score))
     
@@ -54,13 +54,13 @@ def render_donut(score, custom_height=180, custom_font=35):
     fig.update_layout(
         showlegend=False,
         margin=dict(t=0, b=0, l=0, r=0),
-        height=custom_height, # Use the parameter here
+        height=custom_height, 
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         annotations=[{
             'text': f"{display_score}%",
             'x': 0.5, 'y': 0.5,
-            'font_size': custom_font, # Use the parameter here
+            'font_size': custom_font, 
             'font_family': 'sans-serif',
             'font_color': '#6366F1',
             'font_weight': 'bold',
@@ -69,7 +69,7 @@ def render_donut(score, custom_height=180, custom_font=35):
     )
     return fig
 
-# 4. CSS
+# 6. CSS Section
 st.markdown("""
     <style>
     .stApp {
@@ -189,10 +189,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-#5. Header
+#7. Header
 def render_user_menu():
     # 1. Fetch User Data from Session State
-    # Ensure these were set during your login.py process
     user_name = st.session_state.get("user_name", "Amanda Nkomo")
     user_role = st.session_state.get("user_role", "Brand Manager")
     
@@ -204,26 +203,25 @@ def render_user_menu():
             st.image(str(logo_path), width=360)
 
     with col_menu:
-        # This creates the "Clickable" profile area in the top right
-        with st.popover(f"👤 {user_name}", use_container_width=True):
+        # Clickable profile area
+        with st.popover(f"{user_name}", use_container_width=True):
             st.markdown(f"**{user_name}**")
             st.caption(f"Role: {user_role}")
             st.divider()
             
             # Option 1: Switch Account
-            if st.button("🔄 Switch Account", use_container_width=True):
-                # Clear session but keep the app running
+            if st.button("Switch Account", use_container_width=True):
                 st.session_state.clear()
                 st.switch_page("login.py")
             
             # Option 2: Log Out
-            if st.button("🚪 Log Out", use_container_width=True):
+            if st.button("Log Out", use_container_width=True):
                 st.session_state.clear()
                 st.switch_page("login.py")
 
 render_user_menu()
 
-# --- 5. Data Logic (FETCH FROM JSON) ---
+# 8. Fetching Data from JSON file
 campaign_history = []
 user_name = "User"
 if data_path.exists():
@@ -238,9 +236,9 @@ if data_path.exists():
         st.session_state["user_role"] = current_user_data.get("role", "Brand Manager")
 
 
-# 8. UI Rendering
+# 9. UI Rendering
 if not campaign_history:
-    # --- 8A. THE EMPTY STATE ---
+    # 1. If campaign_history is empty (empty state)
     st.markdown("""
         <div style="background-color: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-top: 50px; margin-bottom: 20px;">
             <h3 style="color: #1E293B; margin-bottom: 10px;">Welcome to InSync!</h3>
@@ -254,11 +252,12 @@ if not campaign_history:
             st.switch_page("pages/3_matching.py")
 
 else:
+    # 2. If campaign_history is not empty
     col_left, col_right = st.columns([1, 1.2], gap="large")
 
     with col_left:
         st.markdown("<h2 style='color: white; margin-bottom: 20px;'>Previous Matches</h2>", unsafe_allow_html=True)
-        
+        # Influencer Card structure
         for campaign in reversed(campaign_history):
             name = str(campaign.get('campaign_name', 'Unnamed'))
             aesthetic = str(campaign.get('aesthetic', 'Minimalist'))
@@ -266,7 +265,7 @@ else:
             score_val = float(campaign.get('score') or campaign.get('match_score', 0))
             dash = (score_val / 100) * 251.2
 
-            # Robust HTML Card with SVG Donut
+            # Donut Implementation (HTML, CSS + SVG Graphics)
             card_html = f"""
             <div style="background: white; padding: 20px; border-radius: 25px; margin-bottom: 25px; 
                         box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-left: 10px solid #6366F1;
@@ -299,33 +298,32 @@ else:
             c1, c2 = st.columns([1, 1])
             with c1:
                 st.markdown(f"<h2 style='color: white;'>{latest['campaign_name']}</h2>", unsafe_allow_html=True)
-                # 1. First, find the current user in your JSON database
-                # (Assuming you've already loaded 'users' from users.json)
+                # 1. Find the current user in your JSON database
                 current_user = None
                 if data_path.exists():
                     with open(data_path, "r") as f:
                         users = json.load(f)
 
-                    # 2. Safety Check: Is 'users' a list of dicts?
+                    # 1.1 Safety Check for user in session
                     if isinstance(users, list):
                         for u in users:
                             if u['email'] == st.session_state.get("user_email"):
                                 current_user = u
                                 break
 
-                # 2. Strategy: Priority to Session State, Fallback to JSON History
+                # Initialise Campaign Data
                 campaign_data = None
 
-                # Priority: Check if a match was JUST run in this session
+                # Check if a match was JUST run in this session
                 if "current_campaign" in st.session_state:
                     campaign_data = st.session_state["current_campaign"]
-                # Fallback: Get the last saved campaign from users.json
+                # Get the last saved campaign from users.json
                 elif current_user and "campaign_history" in current_user and current_user["campaign_history"]:
                     campaign_data = current_user["campaign_history"][-1] # Get the most recent entry
 
                 # 3. Render the Chart if data exists
                 if campaign_data:
-                    # Use .get() to find 'leaderboard' (JSON key) or 'alternatives' (Session key)
+                    # Using .get() to find 'leaderboard' (JSON key) or 'alternatives' (Session key)
                     leaderboard = campaign_data.get("leaderboard") or campaign_data.get("alternatives")
 
                 if leaderboard:
@@ -333,9 +331,6 @@ else:
                     chart_df = pd.DataFrame(leaderboard)
                     
                     # 2. THE COLUMN NORMALIZER: 
-                    # This maps 'account_id' or 'Name' to a single standard 'ID' column
-                    # And 'match_score' or 'Match Score' to a standard 'Score' column
-                    
                     # Map for X-Axis (The Names/IDs)
                     if 'Name' in chart_df.columns:
                         chart_df.rename(columns={'Name': 'ID'}, inplace=True)
@@ -396,7 +391,7 @@ else:
             if st.button("🚀 Start New Campaign Match", use_container_width=True, type="primary"):
                 st.switch_page("pages/3_matching.py")
                 
-# FOOTER SECTION 
+# 10. FOOTER SECTION 
 st.markdown("""
     <div class="footer">
         <p>© 2026 InSync | Powered by BSc Computer Science (Systems Engineering) | Mauritius</p>
