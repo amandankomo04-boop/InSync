@@ -461,13 +461,13 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                         
                         # --- 1. NICHE MATCH (30 pts) ---
                         # We weight the metadata match by the AI's confidence in that niche
-                        if str(row.get('content_category', '')).lower() == target_niche.lower():
+                        if str(row.get('content_category', '')).strip().lower() == target_niche.strip().lower():
                             # If AI agrees the image is 'Luxury', you get the full 30. 
                             # If AI thinks it's only 50% 'Luxury', you get 15.
                             score += (30 * ai_niche_conf)
                             
                         # --- 2. AESTHETIC MATCH (30 pts) ---
-                        if str(row.get('aesthetic', '')).lower() == target_aesthetic.lower():
+                        if str(row.get('aesthetic', '')).strip().lower() == target_aesthetic.strip().lower():
                             score += (30 * ai_aesthetic_conf)
                             
                         # --- 3. PERFORMANCE METRICS (15 pts total) ---
