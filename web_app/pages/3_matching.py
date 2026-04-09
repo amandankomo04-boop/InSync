@@ -460,10 +460,7 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                         score = 0
                         
                         # --- 1. NICHE MATCH (30 pts) ---
-                        # We weight the metadata match by the AI's confidence in that niche
                         if str(row.get('content_category', '')).strip().lower() == target_niche.strip().lower():
-                            # If AI agrees the image is 'Luxury', you get the full 30. 
-                            # If AI thinks it's only 50% 'Luxury', you get 15.
                             score += (30 * ai_niche_conf)
                             
                         # --- 2. AESTHETIC MATCH (30 pts) ---
@@ -472,7 +469,7 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                             
                         # --- 3. PERFORMANCE METRICS (15 pts total) ---
                         eng_val = float(row.get('engagement_rate', 0))
-                        score += (min(eng_val, 0.05) / 0.05) * 7.5 
+                        score += (min(eng_val, 100) * 100) / 7.5 
                         
                         bucket = str(row.get('performance_bucket_label', '')).lower()
                         bucket_scores = {'viral': 7.5, 'high': 5.0, 'medium': 2.5, 'low': 1.0}
