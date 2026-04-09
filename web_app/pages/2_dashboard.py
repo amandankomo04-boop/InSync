@@ -31,6 +31,14 @@ if "user_data" not in st.session_state:
 user = st.session_state.get("user_data", {})
 current_email = st.session_state["user_email"]
 
+# --- WELCOME ANIMATION CHECK ---
+if st.session_state.get("show_welcome_balloons", False):
+    st.balloons()
+    st.toast(f"Welcome to InSync, {st.session_state.get('user_name', 'User')}!")
+    
+    st.session_state["show_welcome_balloons"] = False
+
+
 # Updated Helper Function with dynamic height
 def render_donut(score, custom_height=180, custom_font=35):
     display_score = int(float(score))

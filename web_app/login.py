@@ -195,9 +195,11 @@ with col2:
         if authenticated_user:
             # 1. Save to Session State
             st.session_state["user_data"] = authenticated_user
-            st.session_state["logged_in"] = True  # Add this for your 'Gatekeeper'
+            st.session_state["logged_in"] = True  
             st.session_state["user_name"] = authenticated_user.get('name', 'User')
             st.session_state["user_email"] = email_in
+
+            st.session_state["show_welcome_balloons"] = True
             
             # 2. Set Cookie
             expiry_date = datetime.now() + timedelta(days=1)

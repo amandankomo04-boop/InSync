@@ -188,6 +188,8 @@ with col2:
                     st.session_state["user_data"] = user_obj
                     expiry = datetime.now() + timedelta(days=1)
                     cookie_manager.set("insync_user", user_obj, expires_at=expiry)
+
+                    st.session_state["show_welcome_balloons"] = True
                     
                     st.success(f"Welcome, {new_name}!")
                     st.switch_page("pages/2_dashboard.py")
