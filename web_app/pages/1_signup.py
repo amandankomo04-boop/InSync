@@ -4,6 +4,7 @@ from pathlib import Path
 import extra_streamlit_components as stx
 import time
 from datetime import datetime, timedelta
+import re
 
 # 1. Page Configuration
 st.set_page_config(page_title="InSync", layout="wide", initial_sidebar_state="collapsed")
@@ -152,10 +153,30 @@ with col2:
         st.write(" ")
         
         if st.button("Create Account", use_container_width=True, type="primary"):
-            if not new_name or not new_email or not new_pass:
-                st.error("Fields cannot be empty.")
+            # --- 1. DATA SANITIZATION ---
+            # Strip accidental invisible spaces from string inputs
+            clean_name = new_name.strip()
+            clean_email = new_email.strip().lower()
+            clean_brand = new_brand.strip()
+            clean_position = new_position.strip()
+
+            # --- 2. INPUT VALIDATION RULES ---
+            # Rule A: Empty Fields Check
+            if not clean_name or not clean_email or not new_pass or not clean_brand or not clean_position:
+                st.error("⚠️ All fields must be filled out to create an account.")
+            
+            # Rule B: Regex Email Validation
+            # Ensures it follows the "text@text.domain" format
+            elif not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", clean_email):
+                st.error("⚠️ Please enter a valid email address (e.g., name@brand.com).")
+                
+            # Rule C: Password Strength Check (Min 8 chars, at least one number)
+            elif len(new_pass) < 8 or not any(char.isdigit() for char in new_pass):
+                st.error("⚠️ Password must be at least 8 characters long and contain at least one number.")
+                
+            # Rule D: Password Match Check
             elif new_pass != confirm_pass:
-                st.error("Passwords do not match.")
+                st.error("⚠️ Passwords do not match. Please try again.")
             else:
                 # Load existing users
                 users = []
