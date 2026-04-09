@@ -190,7 +190,6 @@ with col2:
                     cookie_manager.set("insync_user", user_obj, expires_at=expiry)
                     
                     st.success(f"Welcome, {new_name}!")
-                    time.sleep(1.5)
                     st.switch_page("pages/2_dashboard.py")
 
         #redirection to log in page

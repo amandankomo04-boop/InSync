@@ -231,147 +231,162 @@ if data_path.exists():
 
 
 # 8. UI Rendering
-col_left, col_right = st.columns([1, 1.2], gap="large")
-
-with col_left:
-    st.markdown("<h2 style='color: white; margin-bottom: 20px;'>Previous Matches</h2>", unsafe_allow_html=True)
-    
-    for campaign in reversed(campaign_history):
-        name = str(campaign.get('campaign_name', 'Unnamed'))
-        aesthetic = str(campaign.get('aesthetic', 'Minimalist'))
-        inf = str(campaign.get('influencer') or campaign.get('top_influencer', 'TBD'))
-        score_val = float(campaign.get('score') or campaign.get('match_score', 0))
-        dash = (score_val / 100) * 251.2
-
-        # Robust HTML Card with SVG Donut
-        card_html = f"""
-        <div style="background: white; padding: 20px; border-radius: 25px; margin-bottom: 25px; 
-                    box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-left: 10px solid #6366F1;
-                    display: flex; align-items: center; justify-content: space-between;">
-            <div style="flex: 1.5;">
-                <h3 style="margin: 0; color: #1E293B; font-size: 20px;">{name}</h3>
-                <p style="margin: 0; color: #64748B; font-size: 13px;">{aesthetic}</p>
-                <p style="margin: 15px 0 0 0; font-size: 13px; color: #1E293B;">Influencer: <strong>{inf}</strong></p>
-            </div>
-            <div style="flex: 1; text-align: right;">
-                <svg width="80" height="80" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" stroke="#F1F5F9" stroke-width="12" fill="none" />
-                    <circle cx="50" cy="50" r="40" stroke="#6366F1" stroke-width="12" fill="none" 
-                            stroke-dasharray="{dash} 251.2" stroke-linecap="round" transform="rotate(-90 50 50)" />
-                    <text x="50" y="57" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="#6366F1">{int(score_val)}%</text>
-                </svg>
-            </div>
+if not campaign_history:
+    # --- 8A. THE EMPTY STATE ---
+    st.markdown("""
+        <div style="background-color: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-top: 50px; margin-bottom: 20px;">
+            <h3 style="color: #1E293B; margin-bottom: 10px;">Welcome to InSync!</h3>
+            <p style="color: #64748B; font-size: 16px;">You currently don't have any previous matches available. Make your first match now!</p>
         </div>
-        """
-        st.write(card_html, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("Navigate to matching page to start", type="primary", use_container_width=True):
+            st.switch_page("pages/3_matching.py")
 
-with col_right:
-    st.markdown("<h1 style='color: white; text-align: center;'>Latest Match</h1>", unsafe_allow_html=True)
-    if campaign_history:
-        latest = campaign_history[-1]
-        l_score = latest.get('score') or latest.get('match_score', 0)
+else:
+    col_left, col_right = st.columns([1, 1.2], gap="large")
+
+    with col_left:
+        st.markdown("<h2 style='color: white; margin-bottom: 20px;'>Previous Matches</h2>", unsafe_allow_html=True)
         
-        st.markdown(f"<h1 style='text-align: center; color: #10B981;'>{int(l_score)}% <span style='color: white;'>Match Score</span></h1>", unsafe_allow_html=True)
-        
-        c1, c2 = st.columns([1, 1])
-        with c1:
-            st.markdown(f"<h2 style='color: white;'>{latest['campaign_name']}</h2>", unsafe_allow_html=True)
-            # 1. First, find the current user in your JSON database
-            # (Assuming you've already loaded 'users' from users.json)
-            current_user = None
-            if data_path.exists():
-                with open(data_path, "r") as f:
-                    users = json.load(f)
+        for campaign in reversed(campaign_history):
+            name = str(campaign.get('campaign_name', 'Unnamed'))
+            aesthetic = str(campaign.get('aesthetic', 'Minimalist'))
+            inf = str(campaign.get('influencer') or campaign.get('top_influencer', 'TBD'))
+            score_val = float(campaign.get('score') or campaign.get('match_score', 0))
+            dash = (score_val / 100) * 251.2
 
-                # 2. Safety Check: Is 'users' a list of dicts?
-                if isinstance(users, list):
-                    for u in users:
-                        if u['email'] == st.session_state.get("user_email"):
-                            current_user = u
-                            break
+            # Robust HTML Card with SVG Donut
+            card_html = f"""
+            <div style="background: white; padding: 20px; border-radius: 25px; margin-bottom: 25px; 
+                        box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-left: 10px solid #6366F1;
+                        display: flex; align-items: center; justify-content: space-between;">
+                <div style="flex: 1.5;">
+                    <h3 style="margin: 0; color: #1E293B; font-size: 20px;">{name}</h3>
+                    <p style="margin: 0; color: #64748B; font-size: 13px;">{aesthetic}</p>
+                    <p style="margin: 15px 0 0 0; font-size: 13px; color: #1E293B;">Influencer: <strong>{inf}</strong></p>
+                </div>
+                <div style="flex: 1; text-align: right;">
+                    <svg width="80" height="80" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" stroke="#F1F5F9" stroke-width="12" fill="none" />
+                        <circle cx="50" cy="50" r="40" stroke="#6366F1" stroke-width="12" fill="none" 
+                                stroke-dasharray="{dash} 251.2" stroke-linecap="round" transform="rotate(-90 50 50)" />
+                        <text x="50" y="57" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="#6366F1">{int(score_val)}%</text>
+                    </svg>
+                </div>
+            </div>
+            """
+            st.write(card_html, unsafe_allow_html=True)
 
-            # 2. Strategy: Priority to Session State, Fallback to JSON History
-            campaign_data = None
-
-            # Priority: Check if a match was JUST run in this session
-            if "current_campaign" in st.session_state:
-                campaign_data = st.session_state["current_campaign"]
-            # Fallback: Get the last saved campaign from users.json
-            elif current_user and "campaign_history" in current_user and current_user["campaign_history"]:
-                campaign_data = current_user["campaign_history"][-1] # Get the most recent entry
-
-            # 3. Render the Chart if data exists
-            if campaign_data:
-                # Use .get() to find 'leaderboard' (JSON key) or 'alternatives' (Session key)
-                leaderboard = campaign_data.get("leaderboard") or campaign_data.get("alternatives")
-
-            if leaderboard:
-                # 1. Create the DataFrame
-                chart_df = pd.DataFrame(leaderboard)
-                
-                # 2. THE COLUMN NORMALIZER: 
-                # This maps 'account_id' or 'Name' to a single standard 'ID' column
-                # And 'match_score' or 'Match Score' to a standard 'Score' column
-                
-                # Map for X-Axis (The Names/IDs)
-                if 'Name' in chart_df.columns:
-                    chart_df.rename(columns={'Name': 'ID'}, inplace=True)
-                elif 'account_id' in chart_df.columns:
-                    chart_df.rename(columns={'account_id': 'ID'}, inplace=True)
-                    
-                # Map for Y-Axis (The Scores)
-                if 'Match Score' in chart_df.columns:
-                    chart_df.rename(columns={'Match Score': 'Score'}, inplace=True)
-                elif 'match_score' in chart_df.columns:
-                    chart_df.rename(columns={'match_score': 'Score'}, inplace=True)
-
-                # 3. Final Safety Check: Do we have an 'ID' column now?
-                if 'ID' in chart_df.columns:
-                    # Convert to string to prevent gaps in the chart
-                    chart_df['ID'] = chart_df['ID'].astype(str).str.replace(".0", "", regex=False)
-                # 3. Render the Bar Chart
-                st.write(f"##### 📊 Top Candidates: {campaign['campaign_name']}")
-                st.bar_chart(
-                    data=chart_df, 
-                    x='ID',      # This must match the name we created: 'ID'
-                    y='Score',   # This must match the name we created: 'Score'
-                    color="#6366F1", 
-                    use_container_width=True,
-                    height=230
-                )
-                st.caption("Showing top 5 suggested influencers for this campaign.")
-            else:
-                st.info("No active campaign data found. Run a match to see the performance chart.")
-
-            st.markdown(f"<p style='color: white;'>Top Candidate: <strong>{latest.get('influencer') or latest.get('top_influencer')}</strong></p>", unsafe_allow_html=True)
-        with c2:
-            st.plotly_chart(render_donut(l_score, 180, 35), use_container_width=True, config={'displayModeBar': False})
-        
+    with col_right:
+        st.markdown("<h1 style='color: white; text-align: center;'>Latest Match</h1>", unsafe_allow_html=True)
         if campaign_history:
             latest = campaign_history[-1]
-            # 1. PREPARE THE DATA FOR DOWNLOAD
-            if "current_campaign" in st.session_state:
-                report_df = pd.DataFrame(st.session_state["current_campaign"]["alternatives"])
-            else:
-                # Fallback: Create a simple one-row dataframe from the JSON history
-                report_df = pd.DataFrame([latest])
+            l_score = latest.get('score') or latest.get('match_score', 0)
+            
+            st.markdown(f"<h1 style='text-align: center; color: #10B981;'>{int(l_score)}% <span style='color: white;'>Match Score</span></h1>", unsafe_allow_html=True)
+            
+            c1, c2 = st.columns([1, 1])
+            with c1:
+                st.markdown(f"<h2 style='color: white;'>{latest['campaign_name']}</h2>", unsafe_allow_html=True)
+                # 1. First, find the current user in your JSON database
+                # (Assuming you've already loaded 'users' from users.json)
+                current_user = None
+                if data_path.exists():
+                    with open(data_path, "r") as f:
+                        users = json.load(f)
 
-            csv_data = report_df.to_csv(index=False).encode('utf-8')
+                    # 2. Safety Check: Is 'users' a list of dicts?
+                    if isinstance(users, list):
+                        for u in users:
+                            if u['email'] == st.session_state.get("user_email"):
+                                current_user = u
+                                break
 
-            # 2. THE BUTTONS
-            st.markdown("<br>", unsafe_allow_html=True)
+                # 2. Strategy: Priority to Session State, Fallback to JSON History
+                campaign_data = None
 
-            # Download .csv
-            st.download_button(
-                label=f"📥 Download {latest['campaign_name']} Report (.csv)",
-                data=csv_data,
-                file_name=f"{latest['campaign_name']}_results.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+                # Priority: Check if a match was JUST run in this session
+                if "current_campaign" in st.session_state:
+                    campaign_data = st.session_state["current_campaign"]
+                # Fallback: Get the last saved campaign from users.json
+                elif current_user and "campaign_history" in current_user and current_user["campaign_history"]:
+                    campaign_data = current_user["campaign_history"][-1] # Get the most recent entry
 
-        if st.button("🚀 Start New Campaign Match", use_container_width=True, type="primary"):
-            st.switch_page("pages/3_matching.py")
+                # 3. Render the Chart if data exists
+                if campaign_data:
+                    # Use .get() to find 'leaderboard' (JSON key) or 'alternatives' (Session key)
+                    leaderboard = campaign_data.get("leaderboard") or campaign_data.get("alternatives")
+
+                if leaderboard:
+                    # 1. Create the DataFrame
+                    chart_df = pd.DataFrame(leaderboard)
+                    
+                    # 2. THE COLUMN NORMALIZER: 
+                    # This maps 'account_id' or 'Name' to a single standard 'ID' column
+                    # And 'match_score' or 'Match Score' to a standard 'Score' column
+                    
+                    # Map for X-Axis (The Names/IDs)
+                    if 'Name' in chart_df.columns:
+                        chart_df.rename(columns={'Name': 'ID'}, inplace=True)
+                    elif 'account_id' in chart_df.columns:
+                        chart_df.rename(columns={'account_id': 'ID'}, inplace=True)
+                        
+                    # Map for Y-Axis (The Scores)
+                    if 'Match Score' in chart_df.columns:
+                        chart_df.rename(columns={'Match Score': 'Score'}, inplace=True)
+                    elif 'match_score' in chart_df.columns:
+                        chart_df.rename(columns={'match_score': 'Score'}, inplace=True)
+
+                    # 3. Final Safety Check: Do we have an 'ID' column now?
+                    if 'ID' in chart_df.columns:
+                        # Convert to string to prevent gaps in the chart
+                        chart_df['ID'] = chart_df['ID'].astype(str).str.replace(".0", "", regex=False)
+                    # 3. Render the Bar Chart
+                    st.write(f"##### 📊 Top Candidates: {campaign['campaign_name']}")
+                    st.bar_chart(
+                        data=chart_df, 
+                        x='ID',      # This must match the name we created: 'ID'
+                        y='Score',   # This must match the name we created: 'Score'
+                        color="#6366F1", 
+                        use_container_width=True,
+                        height=230
+                    )
+                    st.caption("Showing top 5 suggested influencers for this campaign.")
+                else:
+                    st.info("No active campaign data found. Run a match to see the performance chart.")
+
+                st.markdown(f"<p style='color: white;'>Top Candidate: <strong>{latest.get('influencer') or latest.get('top_influencer')}</strong></p>", unsafe_allow_html=True)
+            with c2:
+                st.plotly_chart(render_donut(l_score, 180, 35), use_container_width=True, config={'displayModeBar': False})
+            
+            if campaign_history:
+                latest = campaign_history[-1]
+                # 1. PREPARE THE DATA FOR DOWNLOAD
+                if "current_campaign" in st.session_state:
+                    report_df = pd.DataFrame(st.session_state["current_campaign"]["alternatives"])
+                else:
+                    # Fallback: Create a simple one-row dataframe from the JSON history
+                    report_df = pd.DataFrame([latest])
+
+                csv_data = report_df.to_csv(index=False).encode('utf-8')
+
+                # 2. THE BUTTONS
+                st.markdown("<br>", unsafe_allow_html=True)
+
+                # Download .csv
+                st.download_button(
+                    label=f"📥 Download {latest['campaign_name']} Report (.csv)",
+                    data=csv_data,
+                    file_name=f"{latest['campaign_name']}_results.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+
+            if st.button("🚀 Start New Campaign Match", use_container_width=True, type="primary"):
+                st.switch_page("pages/3_matching.py")
                 
 # FOOTER SECTION 
 st.markdown("""
