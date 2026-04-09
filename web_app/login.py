@@ -207,6 +207,10 @@ with col2:
             # (Removing time.sleep ensures the redirect hits before the footer/JS loads)
             st.success(f"Verified: {authenticated_user.get('name')}. Redirecting...")
             st.switch_page("pages/2_dashboard.py")
+
+    else:
+            # THE FIX: Catch the failed login and show an error
+            st.error("User not found or invalid credentials. Please check your email and password.")
             
     st.write("---")
     st.markdown("""
