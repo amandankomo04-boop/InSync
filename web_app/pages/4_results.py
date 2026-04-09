@@ -314,6 +314,7 @@ else:
                         with open(data_path, "w") as f:
                             json.dump(users, f, indent=4)
                         st.success(f"✔️ Campaign '{camp['name']}' saved to {current_email}!")
+                        st.balloons()
                     else:
                         st.error(f"❌ User '{current_email}' not found in users.json database.")
                 else:
