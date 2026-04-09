@@ -16,15 +16,15 @@ root_path = web_app_path.parent          # IPCoursework folder
 logo_path = root_path / "assets" / "insync_logo.png"
 data_path = root_path / "data" / "users.json"
 
-# Initialize Cookie Manager
+# 3. Initialize Cookie Manager
 cookie_manager = stx.CookieManager()
-# Cookie Logic
+# 3.1 Cookie Logic
 if "user_data" not in st.session_state:
     all_cookies = cookie_manager.get_all()
     if all_cookies and "insync_user" in all_cookies:
         cookie_manager.delete("insync_user")
 
-# 3. Enhanced CSS (Figma Precision)
+# 4. CSS Section
 st.markdown("""
     <style>
     /* Force Background Gradient to fill the whole screen */
@@ -154,7 +154,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 4. App Layout
+# 5. App Layout
 col1, col2 = st.columns([1.6, 1], gap="large")
 
 with col1:
@@ -167,7 +167,6 @@ with col1:
     """, unsafe_allow_html=True)
 
 with col2:
-    # Display Logo if it exists
     if logo_path.exists():
         st.image(str(logo_path), width=360)
     else:
@@ -181,7 +180,7 @@ with col2:
     st.write(" ")
     
     if st.button("Log In", use_container_width=True, type="primary"):
-        # Load and Search Logic
+        # 1. Confirm user is in the .json file
         users = []
         if data_path.exists():
             with open(data_path, "r") as f:
@@ -190,6 +189,7 @@ with col2:
                 except:
                     users = []
         
+        # 2. Checks for email and password. If authentication is successful, the user dictionary is returned
         authenticated_user = next((u for u in users if u.get('email') == email_in and u.get('password') == pass_in), None)
         
         if authenticated_user:
@@ -206,12 +206,10 @@ with col2:
             cookie_manager.set("insync_user", authenticated_user, expires_at=expiry_date)
             
             # 3. Redirect Immediately 
-            # (Removing time.sleep ensures the redirect hits before the footer/JS loads)
             st.success(f"Verified: {authenticated_user.get('name')}. Redirecting...")
             st.switch_page("pages/2_dashboard.py")
 
-    else:
-            # THE FIX: Catch the failed login and show an error
+        else:
             st.error("User not found or invalid credentials. Please check your email and password.")
             
     st.write("---")
@@ -224,20 +222,7 @@ with col2:
     </div>
 """, unsafe_allow_html=True)
 
-#Leave page popup
-if "user_data" not in st.session_state:
-    components.html(
-        """
-        <script>
-        window.onbeforeunload = function() {
-            return "Are you sure you want to leave?";
-        };
-        </script>
-        """,
-        height=0,
-    )
-
-# FOOTER SECTION 
+#6. FOOTER SECTION 
 st.markdown("""
     <div class="footer">
         <p>© 2026 InSync | Powered by BSc Computer Science (Systems Engineering) | Mauritius</p>
