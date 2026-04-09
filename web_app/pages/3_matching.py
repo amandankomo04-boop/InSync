@@ -467,7 +467,6 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                             score += (30 * ai_niche_conf)
                             
                         # --- 2. AESTHETIC MATCH (30 pts) ---
-                        # Same logic: Metadata match weighted by AI Visual Validation
                         if str(row.get('aesthetic', '')).lower() == target_aesthetic.lower():
                             score += (30 * ai_aesthetic_conf)
                             
@@ -480,14 +479,9 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                         score += bucket_scores.get(bucket, 0) # Bucket (7.5)
                         
                         # --- 4. VISUAL SIMILARITY / STYLE ALIGNMENT (25 pts) ---
-                        # Since we lack influencer photos, we use the average AI certainty 
-                        # as a "General Style Alignment" factor for the campaign.
                         score += ((ai_niche_conf + ai_aesthetic_conf) / 2) * 25
 
-                        raw_score = score * 100
-                        boosted = np.sqrt(raw_score) * 10
-
-
+                        boosted = np.sqrt(score) * 10
                         return round(boosted)
 
                     # Apply the expert logic
