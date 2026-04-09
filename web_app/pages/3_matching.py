@@ -464,7 +464,7 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                             score += (30 * ai_niche_conf)
                             
                         # --- 2. AESTHETIC MATCH (30 pts) ---
-                        if str(row.get('aesthetic', '')).strip().lower() == target_aesthetic.strip().lower():
+                        if str(row.get('assigned_aesthetic', '')).strip().lower() == target_aesthetic.strip().lower():
                             score += (30 * ai_aesthetic_conf)
                             
                         # --- 3. PERFORMANCE METRICS (15 pts total) ---
