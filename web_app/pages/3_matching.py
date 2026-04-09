@@ -472,11 +472,11 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                             
                         # --- 3. PERFORMANCE METRICS (15 pts total) ---
                         eng_val = float(row.get('engagement_rate', 0))
-                        score += (min(eng_val, 5) / 5) * 7.5 # Engagement (7.5)
+                        score += (min(eng_val, 0.05) / 0.05) * 7.5 
                         
                         bucket = str(row.get('performance_bucket_label', '')).lower()
                         bucket_scores = {'viral': 7.5, 'high': 5.0, 'medium': 2.5, 'low': 1.0}
-                        score += bucket_scores.get(bucket, 0) # Bucket (7.5)
+                        score += bucket_scores.get(bucket, 0) 
                         
                         # --- 4. VISUAL SIMILARITY / STYLE ALIGNMENT (25 pts) ---
                         score += ((ai_niche_conf + ai_aesthetic_conf) / 2) * 25
