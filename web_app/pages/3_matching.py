@@ -56,7 +56,6 @@ if dna_path.exists():
             aesthetic_centroids = raw_data.get('aesthetic_centroids', {})
             
             # 2. Convert centroids to PyTorch Tensors 
-            # (Because pickle loads them as standard lists/numpy arrays)
             for k, v in niche_centroids.items():
                 niche_centroids[k] = torch.tensor(v).float()
             for k, v in aesthetic_centroids.items():
@@ -71,21 +70,14 @@ if dna_path.exists():
 else:
     st.error(f"❌ File not found at {dna_path}")
 
-# 1. Initialize the architecture (Must match what the trainer used!)
-# If they used ResNet18, use models.resnet18(). If ResNet50, use resnet50().
+# 1. Initialize the architecture 
 encoder_model = models.resnet18(weights=None) 
 
-# 2. Adjust the final layer to match your embedding size (usually 512 or 1024)
-# This removes the 'classification' head so we get the 'Visual DNA' instead
+# 2. Adjust the final layer to match embedding size 
 encoder_model.fc = torch.nn.Identity()
 
-# 3. Load the weights if they are in a separate file
-# weights_path = root_path / "models" / "encoder_weights.pth"
-# if weights_path.exists():
-#     encoder_model.load_state_dict(torch.load(str(weights_path), map_location='cpu'))
-
 encoder_model.eval()
-model = encoder_model # This connects the 'engine' to your 'user_embedding' line
+model = encoder_model 
 
 
 
@@ -246,7 +238,6 @@ def load_influencer_data():
 #5. Header
 def render_user_menu():
     # 1. Fetch User Data from Session State
-    # Ensure these were set during your login.py process
     user_name = st.session_state.get("user_name", "Amanda Nkomo")
     user_role = st.session_state.get("user_role", "Brand Manager")
     
@@ -259,19 +250,19 @@ def render_user_menu():
 
     with col_menu:
         # This creates the "Clickable" profile area in the top right
-        with st.popover(f"👤 {user_name}", use_container_width=True):
+        with st.popover(f" {user_name}", use_container_width=True):
             st.markdown(f"**{user_name}**")
             st.caption(f"Role: {user_role}")
             st.divider()
             
             # Option 1: Switch Account
-            if st.button("🔄 Switch Account", use_container_width=True):
+            if st.button(" Switch Account", use_container_width=True):
                 # Clear session but keep the app running
                 st.session_state.clear()
                 st.switch_page("login.py")
             
             # Option 2: Log Out
-            if st.button("🚪 Log Out", use_container_width=True):
+            if st.button(" Log Out", use_container_width=True):
                 st.session_state.clear()
                 st.switch_page("login.py")
 
@@ -339,7 +330,7 @@ with col_right:
 
     # 3. File Processing Logic (Saves to /data/images/uploads)
     if uploaded_files:
-        st.success(f"✅ {len(uploaded_files)} Images received.")
+        st.success(f" {len(uploaded_files)} Images received.")
         upload_dir = root_path / "data" / "images" / "uploads"
         upload_dir.mkdir(parents=True, exist_ok=True)
 
@@ -349,7 +340,7 @@ with col_right:
                 f.write(uploaded_file.getbuffer())
     else:
         # Display the visual guide if nothing is uploaded yet
-        st.info("💡 Click 'Browse files' above or drag images onto the box to begin.")
+        st.info(" Click 'Browse files' above or drag images onto the box to begin.")
 
     
     # Process the user's reference image
@@ -363,7 +354,7 @@ with col_right:
         )
     ])
 
-    # 1. Only try to process images if the user has actually uploaded something
+    # 1. To only process images if the user has actually uploaded something
     if uploaded_files:
         uploaded_file = uploaded_files[0]
         
@@ -371,10 +362,10 @@ with col_right:
         # 2. Process for the UI/AI
         img = Image.open(uploaded_file).convert('RGB')
         
-        # We define the tensor here so it's ready for the button click later
+        # Define the tensor so it's ready for the button click later
         user_tensor = preprocess(img).unsqueeze(0)
         
-        # 3. Optional: Save to session state ONLY AFTER it's uploaded
+        # 3. Save to session state ONLY AFTER it's uploaded
         st.session_state['uploaded_image'] = uploaded_file
 
         with torch.no_grad():
@@ -405,14 +396,14 @@ with col_right:
 if st.button("Run Matching Algorithm", use_container_width=True):
     # Check for empty campaign name first
     if not campaign_name:
-        st.error("⚠️ Please enter a Campaign Name before running the algorithm.")
+        st.error(" Please enter a Campaign Name before running the algorithm.")
     else:
-        st.write("🔍 Step 1: Loading DNA and Influencer Database...")
+        st.write(" Step 1: Loading DNA and Influencer Database...")
         knowledge = load_dna()
         df = load_influencer_data()
         
         if knowledge is not None and df is not None:
-            st.write("✅ Step 2: Files Loaded successfully.")
+            st.write(" Step 2: Files Loaded successfully.")
             n_key = selected_niche.lower()
             a_key = selected_aesthetic.lower()
             
@@ -423,7 +414,7 @@ if st.button("Run Matching Algorithm", use_container_width=True):
             target_a_vec = a_centroids.get(a_key)
 
             if target_n_vec is not None and target_a_vec is not None:
-                st.write(f"🎯 Step 3: DNA found for {n_key}. Filtering creators...")
+                st.write(f" Step 3: DNA found for {n_key}. Filtering creators...")
                 
                 # Filter CSV based on user selection
                 filtered_df = df[
@@ -432,26 +423,25 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                 ].copy()
 
                 if not filtered_df.empty:
-                    st.write(f"📈 Step 4: Found {len(filtered_df)} candidates. Processing scores...")
+                    st.write(f" Step 4: Found {len(filtered_df)} candidates. Processing scores...")
                     
                     if uploaded_file is not None:
                         # 1. Load and Clean the image
                         img = Image.open(uploaded_file).convert('RGB')
                         
-                        # 2. Transform the image into a Tensor (This clears the 'user_tensor' error)
-                        # The .unsqueeze(0) adds a 'batch' dimension because models expect a list of images
+                        # 2. Transform the image into a Tensor 
                         user_tensor = preprocess(img).unsqueeze(0)
 
-                    # Assuming your model outputs a combined vector or you have two models
+                    
                         with torch.no_grad():
                             outputs = model(user_tensor)
                             probs = torch.nn.functional.softmax(outputs, dim=1)
                             
-                            # AI checks: "How much does this image look like the chosen Niche?"
+                            # Comparing Image with chosen Niche
                             niche_index = niche_centroids.get(selected_niche, 0)
                             ai_niche_conf = float(probs[0][niche_index])
                             
-                            # AI checks: "How much does this image look like the chosen Aesthetic?"
+                            # Comparing Image with chosen Aesthetic
                             aesthetic_index = aesthetic_centroids.get(selected_aesthetic, 0)
                             ai_aesthetic_conf = float(probs[0][aesthetic_index])
 
@@ -516,15 +506,15 @@ if st.button("Run Matching Algorithm", use_container_width=True):
                                 f.write(uploaded_file.getbuffer())
                     
                     # 4. REDIRECT (Outside the image loop so it always triggers)
-                    st.write("🚀 Step 6: Analysis Complete. Redirecting...")
+                    st.write("Step 6: Analysis Complete. Redirecting...")
                     time.sleep(3)
                     st.switch_page("pages/4_results.py")
                 else:
-                    st.error(f"❌ No {influencer_type} influencers found in the {selected_niche} niche.")
+                    st.error(f"No {influencer_type} influencers found in the {selected_niche} niche.")
             else:
-                st.error(f"❌ DNA keys missing. Available: {list(n_centroids.keys())}")
+                st.error(f"DNA keys missing. Available: {list(n_centroids.keys())}")
         else:
-            st.error("❌ Critical Failure: Could not load DNA or CSV. Check file paths!")
+            st.error("Critical Failure: Could not load DNA or CSV. Check file paths!")
 
     
 # FOOTER SECTION 
