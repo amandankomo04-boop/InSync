@@ -27,7 +27,7 @@ dna_path = root_path / "models" / "system_dna.pkl"
 tech_test_path = root_path / "data" / "images" / "niche" / "test" / "tech"
 
 if not tech_test_path.exists():
-    print(f"❌ Folder missing: {tech_test_path}")
+    print(f"Folder missing: {tech_test_path}")
 else:
     with open(dna_path, "rb") as f:
         knowledge = pickle.load(f)
@@ -43,10 +43,10 @@ else:
         tech_vector = None
 
     if tech_vector is None:
-        print("❌ 'Tech' DNA not found in system_dna.pkl.")
+        print("'Tech' DNA not found in system_dna.pkl.")
     else:
         images = [f for f in os.listdir(tech_test_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-        print(f"🚀 Found {len(images)} images. Validating...")
+        print(f"Found {len(images)} images. Validating...")
 
         y_true = []
         y_pred = []
@@ -61,7 +61,6 @@ else:
                 score = calculate_cosine_similarity(feat, tech_vector)
                 
                 y_true.append("tech")
-                # If similarity is high, we count it as a correct 'tech' prediction
                 if score > 0.5:
                     y_pred.append("tech")
                 else:
@@ -71,5 +70,4 @@ else:
 
         # 3. Final Report Generation
         print(f"\n--- Formal Tech Performance Report ---")
-        # We use labels=["tech", "other"] so the table knows what to show
         print(classification_report(y_true, y_pred, labels=["tech", "other"], zero_division=0))

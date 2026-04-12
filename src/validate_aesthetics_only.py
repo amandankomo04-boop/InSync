@@ -34,14 +34,13 @@ def get_vector(img_path):
 # 2. Path Handling
 root_path = Path(r"C:\Users\Amanda\Desktop\coursework")
 dna_path = root_path / "models" / "system_dna.pkl"
-# Target the test folder specifically
 test_path = root_path / "data" / "images" / "aesthetics" / "test"
 
 if __name__ == "__main__":
     if not dna_path.exists():
-        print(f"❌ Error: system_dna.pkl not found at {dna_path}")
+        print(f"Error: system_dna.pkl not found at {dna_path}")
     elif not test_path.exists():
-        print(f"❌ Error: Test folder not found at {test_path}")
+        print(f"Error: Test folder not found at {test_path}")
     else:
         # Load the DNA
         with open(dna_path, "rb") as f:
@@ -51,17 +50,17 @@ if __name__ == "__main__":
         categories = list(centroids.keys())
         
         if not categories:
-            print("❌ Error: No Aesthetic DNA found in the pickle file. Run training first.")
+            print("Error: No Aesthetic DNA found in the pickle file. Run training first.")
         else:
             y_true = []
             y_pred = []
 
-            print(f"🚀 Validating Aesthetic Stream: {categories}")
+            print(f"Validating Aesthetic Stream: {categories}")
 
             for category in categories:
                 cat_dir = test_path / category
                 if not cat_dir.exists():
-                    print(f"⚠️ Skipping {category}: Folder not found in test set.")
+                    print(f"Skipping {category}: Folder not found in test set.")
                     continue
                     
                 images = [f for f in os.listdir(cat_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.jfif'))]

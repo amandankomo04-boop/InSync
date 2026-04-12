@@ -32,32 +32,30 @@ def get_vector(img_path):
     except:
         return None
 
-# 2. Paths - ADJUSTED FOR YOUR STRUCTURE
+# 2. Paths 
 root = Path(r"C:\Users\Amanda\Desktop\coursework")
-# We check the 'train' subfolder first, then fall back to the main folder
 aesthetic_base = root / "data" / "images" / "aesthetics" / "train"
 
 if not aesthetic_base.exists():
-    print(f"⚠️ Warning: 'train' folder not found. Checking main aesthetic folder...")
+    print(f"Warning: 'train' folder not found. Checking main aesthetic folder...")
     aesthetic_base = root / "data" / "images" / "aesthetics"
 
 # 3. Training Logic
 if __name__ == "__main__":
-    print(f"🚀 Targeted Aesthetic Training Started at: {aesthetic_base}")
+    print(f"Targeted Aesthetic Training Started at: {aesthetic_base}")
     
-    # Get Style Folders (Luxury, Boho, etc.)
+    # Get Style Folders 
     categories = [d for d in os.listdir(aesthetic_base) 
                  if os.path.isdir(aesthetic_base / d) and d not in ['train', 'test', 'temp']]
     
     aesthetic_dna = {}
 
     for cat in categories:
-        print(f"\n🎨 Extracting Style DNA: {cat}")
+        print(f"\nExtracting Style DNA: {cat}")
         cat_dir = aesthetic_base / cat
         images = [f for f in os.listdir(cat_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.jfif'))]
         
         vectors = []
-        # Limiting to 500 for speed since aesthetics are very visually distinct
         for img_name in tqdm(images[:500], desc=f"Analyzing {cat}"):
             vec = get_vector(cat_dir / img_name)
             if vec is not None:
@@ -65,23 +63,23 @@ if __name__ == "__main__":
         
         if vectors:
             aesthetic_dna[cat] = np.mean(vectors, axis=0)
-            print(f"✅ Created Centroid for {cat}")
+            print(f"Created Centroid for {cat}")
 
-    # 4. THE MERGE (Crucial Step)
+    # 4. Merging with system_dna.pkl
     dna_path = root / "models" / "system_dna.pkl"
     
     if dna_path.exists():
         with open(dna_path, "rb") as f:
             existing_data = pickle.load(f)
         
-        # Update only the aesthetic part, keep niche intact
+        # Update only the aesthetic part
         existing_data["aesthetic_centroids"] = aesthetic_dna
         
         with open(dna_path, "wb") as f:
             pickle.dump(existing_data, f)
-        print(f"\n✨ SUCCESS: Aesthetic DNA merged into system_dna.pkl")
+        print(f"\nSUCCESS: Aesthetic DNA merged into system_dna.pkl")
     else:
         # If the file didn't exist for some reason, create a new one
         with open(dna_path, "wb") as f:
             pickle.dump({"niche_centroids": {}, "aesthetic_centroids": aesthetic_dna}, f)
-        print(f"\n📂 Created NEW system_dna.pkl with Aesthetic data only.")
+        print(f"\nCreated NEW system_dna.pkl with Aesthetic data only.")
