@@ -19,13 +19,12 @@ data_path = root_path / "data" / "users.json"
 if "user_email" not in st.session_state:
     st.error("⚠️ Security Access Denied: User session not found.")
     st.info("Redirecting to Login Page...")
-    time.sleep(2) # Give the user a moment to read the message
+    time.sleep(2) 
     st.switch_page("login.py")
-    st.stop() # Prevents the rest of the code from running
-
+    st.stop() 
 current_email = st.session_state["user_email"]
 
-# 3. CSS for Figma Cards
+# 3. CSS 
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #A78BFA 0%, #34D399 100%) !important; }
@@ -135,13 +134,13 @@ st.markdown("""
 
 # 4. Helper: Donut Chart
 def render_donut(score):
-    # Ensure score is an integer for display
+    
     display_score = int(float(score))
     
     fig = go.Figure(go.Pie(
         values=[display_score, 100 - display_score],
-        hole=.75, # Slightly larger hole for better text fit
-        marker_colors=['#6366F1', 'rgba(0,0,0,0)'], #Blue colour
+        hole=.75, 
+        marker_colors=['#6366F1', 'rgba(0,0,0,0)'], 
         textinfo='none',
         hoverinfo='none'
     ))
@@ -149,10 +148,10 @@ def render_donut(score):
     fig.update_layout(
         showlegend=False,
         margin=dict(t=0, b=0, l=0, r=0),
-        height=220, # Fixed height for consistency
+        height=220, 
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        # THE FIX: Centered Annotation
+        # Centered Annotation
         annotations=[{
             'text': f"{display_score}%",
             'x': 0.5, 'y': 0.5,
@@ -168,7 +167,6 @@ def render_donut(score):
 #5. Header
 def render_user_menu():
     # 1. Fetch User Data from Session State
-    # Ensure these were set during your login.py process
     user_name = st.session_state.get("user_name", "Amanda Nkomo")
     user_role = st.session_state.get("user_role", "Brand Manager")
     
@@ -180,20 +178,20 @@ def render_user_menu():
             st.image(str(logo_path), width=360)
 
     with col_menu:
-        # This creates the "Clickable" profile area in the top right
-        with st.popover(f"👤 {user_name}", use_container_width=True):
+        # Clickable Profile Area
+        with st.popover(f"{user_name}", use_container_width=True):
             st.markdown(f"**{user_name}**")
             st.caption(f"Role: {user_role}")
             st.divider()
             
             # Option 1: Switch Account
-            if st.button("🔄 Switch Account", use_container_width=True):
+            if st.button("Switch Account", use_container_width=True):
                 # Clear session but keep the app running
                 st.session_state.clear()
                 st.switch_page("login.py")
             
             # Option 2: Log Out
-            if st.button("🚪 Log Out", use_container_width=True):
+            if st.button("Log Out", use_container_width=True):
                 st.session_state.clear()
                 st.switch_page("login.py")
 
@@ -219,7 +217,6 @@ if results_df.empty:
     st.warning("No active results found.")
     if st.button("Back to Dashboard"): st.switch_page("pages/2_dashboard.py")
 else:
-    # --- TOP SECTION: FIGMA LAYOUT ---
     col_main, col_side = st.columns([1.5, 1], gap="large")
 
     with col_main:
@@ -251,10 +248,9 @@ else:
         if "selected_idx" not in st.session_state:
             st.session_state.selected_idx = 0
 
-        # Get the currently selected influencer data
         current_choice = results_df.iloc[st.session_state.selected_idx]
 
-        # --- Top Influencer Card (Now dynamic based on selection) ---
+        # Top Influencer Card
         st.markdown(f"""
             <div class="white-card" style="border-left: 10px solid #6366F1; margin-bottom:20px;">
                 <p style="color: #64748B; margin: 0; font-size: 14px;">Current Selection:</p>
@@ -262,7 +258,7 @@ else:
             </div>
         """, unsafe_allow_html=True)
         
-        # --- Alternatives List with Selection Buttons ---
+        # Alternatives List with Selection Buttons
         with st.container():
             st.subheader("Select Alternative")
             
@@ -281,11 +277,11 @@ else:
             st.write("<br>", unsafe_allow_html=True)
             
             # --- Confirm Button (Saves the SPECIFIC selection) ---
-            if st.button("✅ Confirm Influencer for Campaign", use_container_width=True, type="primary"):
+            if st.button("Confirm Influencer for Campaign", use_container_width=True, type="primary"):
                 current_email = st.session_state.get("user_email")
                 
                 if not current_email:
-                    st.error("❌ Logic Error: User Email not found in session. Please log in again.")
+                    st.error("Logic Error: User Email not found in session. Please log in again.")
                 elif data_path.exists():
                     with open(data_path, "r") as f:
                         users = json.load(f)
@@ -313,18 +309,18 @@ else:
                     if found_user:
                         with open(data_path, "w") as f:
                             json.dump(users, f, indent=4)
-                        st.success(f"✔️ Campaign '{camp['name']}' saved to {current_email}!")
+                        st.success(f"Campaign '{camp['name']}' saved to {current_email}!")
                         st.balloons()
                     else:
-                        st.error(f"❌ User '{current_email}' not found in users.json database.")
+                        st.error(f"User '{current_email}' not found in users.json database.")
                 else:
-                    st.error(f"❌ File Not Found: {data_path}")
+                    st.error(f"File Not Found: {data_path}")
 
             if st.button("🔄 Start New Campaign Match", use_container_width=True):
                 st.switch_page("pages/3_matching.py")
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- BOTTOM SECTION: DETAILED TABLE ---
+    
     st.write("---")
     st.subheader("Detailed Creator Breakdown")
     st.dataframe(results_df.style.background_gradient(subset=['Match Score'], cmap='BuGn'), use_container_width=True, hide_index=True)
